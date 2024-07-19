@@ -1,0 +1,8 @@
+.userName {
+  border-radius: 10px;
+}
+
+.userName:focus {
+  outline: none;
+  border: 2px solid rgb(50, 214, 255);
+}

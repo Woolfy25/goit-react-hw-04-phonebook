@@ -1,0 +1,10 @@
+.contactsTitle {
+  font-size: 30px;
+}
+
+.contactsLists {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 20px;
+}

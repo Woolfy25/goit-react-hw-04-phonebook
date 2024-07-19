@@ -1,0 +1,21 @@
+.form {
+  padding: 20px;
+  border: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  gap: 20px;
+}
+
+.form label {
+  font-size: 30px;
+}
+
+.userName {
+  border-radius: 10px;
+}
+
+.userName:focus {
+  outline: none;
+  border: 2px solid rgb(50, 214, 255);
+}
