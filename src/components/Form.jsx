@@ -1,63 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import css from './Form.module.css';
 import { nanoid } from 'nanoid';
 import Contacts from './Contacts';
 
-class Form extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      contacts: [
-        { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-        { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-        { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-        { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-      ],
-      name: '',
-      number: '',
-      filter: '',
-    };
-  }
-  nameLabelID = nanoid();
-  numberLabelID = nanoid();
-  filterLabelID = nanoid();
-
-  componentDidMount() {
+const Form = () => {
+  const initialContacts = () => {
     const savedContacts = JSON.parse(localStorage.getItem('contacts'));
-    if (savedContacts && savedContacts.length > 0) {
-      this.setState({ contacts: savedContacts });
-    }
-  }
+    return savedContacts && savedContacts.length > 0
+      ? savedContacts
+      : [
+          { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+          { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+          { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+          { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+        ];
+  };
 
-  // componentDidMount() {
+  const [contacts, setContacts] = useState(initialContacts);
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+  const [filter, setFilter] = useState('');
+
+  const nameLabelID = nanoid();
+  const numberLabelID = nanoid();
+  const filterLabelID = nanoid();
+
+  // useEffect(() => {
   //   const savedContacts = JSON.parse(localStorage.getItem('contacts'));
   //   if (savedContacts && savedContacts.length > 0) {
-  //     this.setState({ contacts: [...this.state.contacts, ...savedContacts] });
+  //     setContacts(savedContacts);
   //   }
-  // }
+  // }, []);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
-  handleNameChange = event => {
-    this.setState({ name: event.target.value });
+  const handleNameChange = event => {
+    setName(event.target.value);
   };
 
-  handleNumberChange = event => {
-    this.setState({ number: event.target.value });
+  const handleNumberChange = event => {
+    setNumber(event.target.value);
   };
 
-  handleFilterChange = event => {
-    this.setState({ filter: event.target.value });
+  const handleFilterChange = event => {
+    setFilter(event.target.value);
   };
 
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    const { name, number, contacts } = this.state;
-
     const duplicateContact = contacts.find(
       contact => contact.name.toLowerCase() === name.toLowerCase()
     );
@@ -70,75 +62,70 @@ class Form extends React.Component {
         name,
         number,
       };
-      this.setState({
-        contacts: [...contacts, newContact],
-        name: '',
-        number: '',
-      });
+      setContacts(prevContacts => [...prevContacts, newContact]);
+      setName('');
+      setNumber('');
     }
   };
 
-  getFilteredContacts = () => {
-    const { contacts, filter } = this.state;
+  const getFilteredContacts = () => {
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
   };
 
-  handleDelete = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
+  const handleDelete = id => {
+    setContacts(prevContacts =>
+      prevContacts.filter(contact => contact.id !== id)
+    );
   };
 
-  render() {
-    const { filter } = this.state;
-    const filteredContacts = this.getFilteredContacts();
-    return (
-      <form onSubmit={this.handleSubmit} className={css.form}>
-        <label htmlFor={this.nameLabelID}>Name</label>
-        <input
-          className={css.userName}
-          type="text"
-          name={this.nameLabelID}
-          pattern="^[a-zA-Z]+(([' -][a-zA-Z ])?[a-zA-Z]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-          value={this.state.name}
-          onChange={this.handleNameChange}
-        />
-        <label htmlFor={this.numberLabelID}>Number</label>
-        <input
-          className={css.userName}
-          type="tel"
-          name={this.numberLabelID}
-          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-          value={this.state.number}
-          onChange={this.handleNumberChange}
-        />
-        <button type="submit">Submit</button>
+  const filteredContacts = getFilteredContacts();
 
-        <label htmlFor={this.filterLabelID} className={css.userName}>
-          Search
-        </label>
-        <input
-          className={css.userName}
-          type="text"
-          name="filter"
-          value={filter}
-          onChange={this.handleFilterChange}
-        />
+  return (
+    <form onSubmit={handleSubmit} className={css.form}>
+      <label htmlFor={nameLabelID}>Name</label>
+      <input
+        className={css.userName}
+        type="text"
+        name={nameLabelID}
+        pattern="^[a-zA-Z]+(([' -][a-zA-Z ])?[a-zA-Z]*)*$"
+        title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+        required
+        value={name}
+        onChange={handleNameChange}
+      />
+      <label htmlFor={numberLabelID}>Number</label>
+      <input
+        className={css.userName}
+        type="tel"
+        name={numberLabelID}
+        pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+        required
+        value={number}
+        onChange={handleNumberChange}
+      />
+      <button type="submit">Submit</button>
 
-        <Contacts
-          titleName={'Contacts'}
-          contacts={filteredContacts}
-          onDelete={this.handleDelete}
-        />
-      </form>
-    );
-  }
-}
+      <label htmlFor={filterLabelID} className={css.userName}>
+        Search
+      </label>
+      <input
+        className={css.userName}
+        type="text"
+        name="filter"
+        value={filter}
+        onChange={handleFilterChange}
+      />
+
+      <Contacts
+        titleName={'Contacts'}
+        contacts={filteredContacts}
+        onDelete={handleDelete}
+      />
+    </form>
+  );
+};
 
 export default Form;
