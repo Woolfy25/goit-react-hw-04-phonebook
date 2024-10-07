@@ -8,9 +8,14 @@ const Contacts = ({ titleName, contacts, onDelete }) => {
       <h2 className={css.contactsTitle}>{titleName}</h2>
       <ul className={css.contactsLists}>
         {contacts.map(contact => (
-          <li key={contact.id}>
+          <li key={contact.id} className={css.contactsElement}>
             {contact.name}: {contact.number}
-            <button onClick={() => onDelete(contact.id)}>Delete</button>
+            <button
+              onClick={() => onDelete(contact.id)}
+              className={css.contactDelete}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
